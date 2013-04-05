@@ -2,7 +2,7 @@
 
 Hyperstart is a simple bash script to get your OSX machine up and running as quickly as possible.
 
-!(http://25.media.tumblr.com/tumblr_lxm124J68n1qizhaoo1_400.gif)
+![HYPERSTART](http://25.media.tumblr.com/tumblr_lxm124J68n1qizhaoo1_400.gif)
 
 ## How to run
 
