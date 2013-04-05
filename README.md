@@ -4,10 +4,11 @@ Hyperstart is a simple bash script to get your OSX machine up and running as qui
 
 ![HYPERSTART](http://25.media.tumblr.com/tumblr_lxm124J68n1qizhaoo1_400.gif)
 
-## How to run
+## Run it
 
 1. Install XCode
-2. Run `sh hyperstart.sh`
+2. Tweak the script to your needs
+3. Run `sh hyperstart.sh`
 
 I recommend downloading the script and tweaking it. It's a simple script making lots of assumptions about how you want your environment
 
@@ -26,3 +27,7 @@ I recommend downloading the script and tweaking it. It's a simple script making 
   * onepassword
   * sublimetext2
   * evernote
+
+## Describe to me hyperstart's genesis
+
+I'm a big fan of devops. Using code to predictably and repeatedly configure servers is a wonderful thing. So like many nerds, I was excited to see [boxen](https://www.github.com/boxen) show up for development machine management. After throwing myself against the rocks several multiple times, I finally gave up in frustration. Frankly, I’m tired of frameworks and working against all the opinions of opinionated software. So, I have a simple script that sets up what I need, installs my dotfiles which sets up the rest and then installs vagrant which give me a dev environment.
