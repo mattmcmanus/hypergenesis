@@ -7,10 +7,10 @@ Hyperstart is a simple bash script to get your OSX machine up and running as qui
 ## Run it
 
 1. Install XCode
-2. Tweak the script to your needs
+2. Tweak the script to your needs. *(Most of the configuration is in variables at the top)*
 3. Run `sh hyperstart.sh`
 
-I recommend forking the script and tweaking it. It's a simple script making lots of assumptions about how you want your environment
+I recommend forking the script and tweaking it. It's a simple script that only covers so much. You know what you need.
 
 ## What does it do?
 
