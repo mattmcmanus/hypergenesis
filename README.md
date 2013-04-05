@@ -10,7 +10,7 @@ Hyperstart is a simple bash script to get your OSX machine up and running as qui
 2. Tweak the script to your needs
 3. Run `sh hyperstart.sh`
 
-I recommend downloading the script and tweaking it. It's a simple script making lots of assumptions about how you want your environment
+I recommend forking the script and tweaking it. It's a simple script making lots of assumptions about how you want your environment
 
 ## What does it do?
 
