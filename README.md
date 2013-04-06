@@ -1,6 +1,8 @@
 # Hyperstart *for osx*
 
-Hyperstart is a simple bash script to get your OSX machine up and running as quickly as possible.
+Hyperstart is a simple bash script to get your OSX machine up and running as quickly as possible. 
+
+It's designed around the assumption that (1.) most of you configuraiton settings are handled by some sort of dotfiles repository and (2.) any complicated development setup is done with vagrant in a VM.
 
 ![HYPERSTART](http://25.media.tumblr.com/tumblr_lxm124J68n1qizhaoo1_400.gif)
 
