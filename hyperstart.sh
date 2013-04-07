@@ -12,17 +12,19 @@ dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
 # Apps to install
-apps=(chrome virtualbox vagrant dropbox onepassword sublimetext2 evernote)
+apps=(chrome virtualbox vagrant dropbox onepassword sublimetext2 evernote firefox)
 
 # URLs for app downloads
 # Make sure all apps listed above have associated urls
 vagrant_url='http://files.vagrantup.com/packages/64e360814c3ad960d810456add977fd4c7d47ce6/Vagrant.dmg' #1.1.5
 chrome_url='https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
+firefox_url='https://download.mozilla.org/?product=firefox-20.0&os=osx&lang=en-US'
 dropbox_url='https://www.dropbox.com/download?plat=mac'
 onepassword_url='https://d13itkw33a7sus.cloudfront.net/dist/1P/mac/1Password-3.8.20.zip'
 virtualbox_url='http://download.virtualbox.org/virtualbox/4.2.10/VirtualBox-4.2.10-84104-OSX.dmg'
 sublimetext2_url='http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.1.dmg'
 evernote_url='http://www.evernote.com/about/download/get.php?file=EvernoteMac'
+
 
 # An array of various vagrant repos to checkout
 vagrantRepos=('git@github.com:punkave/punkave-vagrant-lamp.git')
@@ -61,8 +63,10 @@ function installApp {
     [ -e "`echo *.app`" ] && cp -R *.app /Applications/
   
     cd ~
-    hdiutil detach $mountpoint
-  )
+    sleep 5
+    hdiutil detach $mountpoint -force
+    rm $HOME/Downloads/$dest
+  ) || log "$name already installed"
 }
 
 
