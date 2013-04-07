@@ -1,16 +1,16 @@
-# Hyperstart *for osx*
+# Hypergenesis *for osx*
 
-Hyperstart is a simple bash script to get your OSX machine up and running as quickly as possible. 
+Hypergenesis is a simple bash script to get your OSX machine up and running as quickly as possible. 
 
-It's designed around the assumption that (1.) most of you configuraiton settings are handled by some sort of dotfiles repository and (2.) any complicated development setup is done with vagrant in a VM.
+It's designed around the assumption that (1.) most of you configuration settings are handled by some sort of dotfiles repository and (2.) any complicated development setup is done with vagrant in a VM.
 
-![HYPERSTART](http://25.media.tumblr.com/tumblr_lxm124J68n1qizhaoo1_400.gif)
+![HYPERGENESIS](http://25.media.tumblr.com/tumblr_lxm124J68n1qizhaoo1_400.gif)
 
 ## Run it
 
 1. Install XCode
 2. Tweak the script to your needs. *(Most of the configuration is in variables at the top)*
-3. Run `sh hyperstart.sh`
+3. Run `sh hypergenesis.sh`
 
 I recommend forking the script and tweaking it. It's a simple script that only covers so much. You know what you need.
 
@@ -30,6 +30,6 @@ I recommend forking the script and tweaking it. It's a simple script that only c
   * sublimetext2
   * evernote
 
-## Describe to me hyperstart's genesis
+## Describe to me hypergenesis's genesis
 
 I'm a big fan of devops. Using code to predictably and repeatedly configure servers is a wonderful thing. So like many nerds, I was excited to see [boxen](https://www.github.com/boxen) show up for development machine management. After throwing myself against the rocks several multiple times, I finally gave up in frustration. Frankly, I’m tired of frameworks and working against all the opinions of opinionated software. So, I have a simple script that sets up what I need, installs my dotfiles which sets up the rest and then installs vagrant which give me a dev environment.
