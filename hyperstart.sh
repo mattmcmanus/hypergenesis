@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 
 #
 #             Configuration
@@ -8,6 +9,7 @@
 brewInstalls='git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed'
 
 dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
+dotfiles_location="$HOME/.dotfiles"
 
 # Apps to install
 apps=(chrome virtualbox vagrant dropbox onepassword sublimetext2 evernote)
@@ -30,27 +32,37 @@ vagrantRepos=('git@github.com:punkave/punkave-vagrant-lamp.git')
 # - - - - - - - - - - - - - - - - - - - - - -
 
 function log {
-  echo " -> $1"
+  echo ""
+  echo " ==> $1"
+  echo ""
 }
 
 function installApp {
-  shopt -s nullglob
-
   name=$1
-  download="~/Downloads/$name.dmg"
-  mountpoint="/Volumes/$name"
 
-  log "Installing $name"
+  # A quick check to see if the app is already installed
+  [ ! -n "`find /Applications -maxdepth 1 -iname *$name*`" ] && (
+    shopt -s nullglob
+  
+    cd ~/Downloads/
 
-  curl -L -o $download $${name}_url
-  hdiutil attach -mountpoint $mountpoint $download
+    dest="$name.dmg"
+    mountpoint="/Volumes/$name"
+    url=$(eval "echo \$${name}_url") # Ew
 
-  # Test if there is a pkg or app file and run the appropriate installer
-  cd $mountpoint
-  [ -z "`echo *.pkg`" ] && sudo installer -package *.pkg -target /
-  [ -z "`echo *.app`" ] && cp -R *.app /Applications/
+    log "Installing $name"
 
-  hdiutil detach $mountpoint
+    [ ! -e $dest ] && curl -L -o $dest $url
+    hdiutil attach -mountpoint $mountpoint $dest
+
+    # Test if there is a pkg or app file and run the appropriate installer
+    cd $mountpoint
+    [ -e "`echo *.pkg`" ] && sudo installer -package *.pkg -target /
+    [ -e "`echo *.app`" ] && cp -R *.app /Applications/
+  
+    cd ~
+    hdiutil detach $mountpoint
+  )
 }
 
 
@@ -58,33 +70,51 @@ function installApp {
 #         Commence Installations
 # - - - - - - - - - - - - - - - - - - - - - -
 
-echo '       * * * * * * COMMENCE HYPERGENESIS * * * * * * '
+echo ''
+echo '       * * * * * * * * * * * INITIATING * * * * * * * * * * * '
+echo''
+echo '	    __  __                                                  '
+echo '	   / / / /_  ______  ___  _______                           '
+echo '	  / /_/ / / / / __ \/ _ \/ _____/                     _     '
+echo '	 / __  / /_/ / /_/ /  __/ / ____/__  ____  ___  _____(_)____'
+echo '	/_/ /_/\__, / .___/\___/_/ / __/ _ \/ __ \/ _ \/ ___/ / ___/'
+echo '	      /____/_/          / /_/ /  __/ / / /  __(__  ) (__  ) '
+echo '	                        \____/\___/_/ /_/\___/____/_/____/  '                                                      
+echo ''
+echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * '
+
 
 #0. Install XCode
 # Not sure how to check this just yet
 
-#1. Install homebrew
-log "Installing Homebrew"
-ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
 
-# 2. Install some goodies
-log "Installing goodies from homebrew"
-brew update
-brew install $brewInstalls
+[ ! $(which brew) ] && (
+  #log "Installing Homebrew"
+  ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+  
+  log "Installing goodies from homebrew"  
+  brew update
+  brew install $brewInstalls
+)
 
-# 3. Setup dotfiles repo
-log "Setting up your dotfiles repo"
-cd $HOME
-git clone $dotfiles_repo .dotfiles
-cd .dotfiles
-script/bootstrap
 
-# 4. Install NVM
-log "Installing NVM"
-curl https://raw.github.com/creationix/nvm/master/install.sh | sh
-nvm install 0.10
+[ ! -d $dotfiles_location ] && (
+  log "Setting up your dotfiles repo"
+  cd $HOME
+  git clone $dotfiles_repo $dotfiles_location
+  cd .dotfiles
+  script/bootstrap
+  source ~/.bash_profile
+)
 
-# 5. Install dmg'ed apps
+#log "Installing NVM"
+[ ! -d $HOME/.nvm ] && (
+  curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+  source ~/.bash_profile
+  nvm install 0.10
+)
+
+
 log "Installing Apps"
 for app in "${apps[@]}"
 do
@@ -92,12 +122,13 @@ do
 done
 
 # 6. Cloning vagrant repos
-mkdir -p ~/src
-cd ~/src/
-for repo in "${vagrantRepos[@]}"
-do
-  git clone $repo
-done
+log "Closing vagrant repos"
+#mkdir -p ~/dev
+#cd ~/dev/
+#for repo in "${vagrantRepos[@]}"
+#do
+#  git clone $repo
+#done
 
 
 echo '       * * * * * * HYPERGENESIS REVELATION * * * * * * '
