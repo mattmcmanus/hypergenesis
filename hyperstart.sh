@@ -12,7 +12,7 @@ dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
 # Apps to install
-apps=(chrome virtualbox vagrant dropbox onepassword sublimetext2 evernote firefox)
+apps=(chrome virtualbox vagrant password dropbox sublimetext2 evernote firefox iterm2)
 
 # URLs for app downloads
 # Make sure all apps listed above have associated urls
@@ -20,10 +20,11 @@ vagrant_url='http://files.vagrantup.com/packages/64e360814c3ad960d810456add977fd
 chrome_url='https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
 firefox_url='https://download.mozilla.org/?product=firefox-20.0&os=osx&lang=en-US'
 dropbox_url='https://www.dropbox.com/download?plat=mac'
-onepassword_url='https://d13itkw33a7sus.cloudfront.net/dist/1P/mac/1Password-3.8.20.zip'
+password_url='https://d13itkw33a7sus.cloudfront.net/dist/1P/mac/1Password-3.8.20.zip'
 virtualbox_url='http://download.virtualbox.org/virtualbox/4.2.10/VirtualBox-4.2.10-84104-OSX.dmg'
 sublimetext2_url='http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.1.dmg'
 evernote_url='http://www.evernote.com/about/download/get.php?file=EvernoteMac'
+iterm2_url='https://iterm2.googlecode.com/files/iTerm2-1_0_0_20130319.zip'
 
 
 # An array of various vagrant repos to checkout
@@ -39,33 +40,38 @@ function log {
   echo ""
 }
 
-function installApp {
+function installApp() {
   name=$1
-
+  url=$2
   # A quick check to see if the app is already installed
   [ ! -n "`find /Applications -maxdepth 1 -iname *$name*`" ] && (
     shopt -s nullglob
   
     cd ~/Downloads/
-
-    dest="$name.dmg"
+    
+    # We need to account for zips as well as dmgs
+    [ "${url##*.}" == 'zip' ] && dest="$name.zip" || dest="$name.dmg"
     mountpoint="/Volumes/$name"
-    url=$(eval "echo \$${name}_url") # Ew
 
-    log "Installing $name"
+    log "Installing $name from $url to $dest"
+    
+    [ ! -e $dest ] && curl -L -o $dest "$url"
+    
+    if [ "${dest##*.}" == 'zip' ]; then
+      unzip $dest -d /Applications/
 
-    [ ! -e $dest ] && curl -L -o $dest $url
-    hdiutil attach -mountpoint $mountpoint $dest
-
-    # Test if there is a pkg or app file and run the appropriate installer
-    cd $mountpoint
-    [ -e "`echo *.pkg`" ] && sudo installer -package *.pkg -target /
-    [ -e "`echo *.app`" ] && cp -R *.app /Applications/
-  
-    cd ~
-    sleep 5
-    hdiutil detach $mountpoint -force
+    else
+      hdiutil attach -mountpoint $mountpoint $dest
+      # Test if there is a pkg or app file and run the appropriate installer
+      cd $mountpoint
+      [ -e "`echo *.pkg`" ] && sudo installer -package *.pkg -target /
+      [ -e "`echo *.app`" ] && cp -R *.app /Applications/
+      cd ~
+      sleep 5
+      hdiutil detach $mountpoint -force
+    fi
     rm $HOME/Downloads/$dest
+
   ) || log "$name already installed"
 }
 
@@ -75,7 +81,7 @@ function installApp {
 # - - - - - - - - - - - - - - - - - - - - - -
 
 echo ''
-echo '       * * * * * * * * * * * INITIATING * * * * * * * * * * * '
+echo '       * * * * * * * * * * * * * * INITIATING * * * * * * * * * * * * * * '
 echo''
 echo '	    __  __                                                  '
 echo '	   / / / /_  ______  ___  _______                           '
@@ -85,7 +91,7 @@ echo '	/_/ /_/\__, / .___/\___/_/ / __/ _ \/ __ \/ _ \/ ___/ / ___/'
 echo '	      /____/_/          / /_/ /  __/ / / /  __(__  ) (__  ) '
 echo '	                        \____/\___/_/ /_/\___/____/_/____/  '                                                      
 echo ''
-echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * '
+echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * '
 
 
 #0. Install XCode
@@ -111,8 +117,8 @@ echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * '
   source ~/.bash_profile
 )
 
-#log "Installing NVM"
 [ ! -d $HOME/.nvm ] && (
+  log "Installing NVM"
   curl https://raw.github.com/creationix/nvm/master/install.sh | sh
   source ~/.bash_profile
   nvm install 0.10
@@ -122,7 +128,7 @@ echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * '
 log "Installing Apps"
 for app in "${apps[@]}"
 do
-  installApp $app
+  installApp $app $(eval "echo \$${app}_url") # Ew
 done
 
 # 6. Cloning vagrant repos
