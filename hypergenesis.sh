@@ -12,7 +12,7 @@ dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
 # Apps to install
-apps=(chrome virtualbox vagrant password dropbox sublimetext2 evernote firefox iterm2)
+apps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm)
 
 # URLs for app downloads
 # Make sure all apps listed above have associated urls
@@ -22,9 +22,9 @@ firefox_url='https://download.mozilla.org/?product=firefox-20.0&os=osx&lang=en-U
 dropbox_url='https://www.dropbox.com/download?plat=mac'
 password_url='https://d13itkw33a7sus.cloudfront.net/dist/1P/mac/1Password-3.8.20.zip'
 virtualbox_url='http://download.virtualbox.org/virtualbox/4.2.10/VirtualBox-4.2.10-84104-OSX.dmg'
-sublimetext2_url='http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.1.dmg'
+sublime_url='http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.1.dmg'
 evernote_url='http://www.evernote.com/about/download/get.php?file=EvernoteMac'
-iterm2_url='https://iterm2.googlecode.com/files/iTerm2-1_0_0_20130319.zip'
+iterm_url='https://iterm2.googlecode.com/files/iTerm2-1_0_0_20130319.zip'
 
 
 # An array of various vagrant repos to checkout
@@ -58,7 +58,7 @@ function installApp() {
     [ ! -e $dest ] && curl -L -o $dest "$url"
     
     if [ "${dest##*.}" == 'zip' ]; then
-      unzip $dest -d /Applications/
+      unzip $dest -q -d /Applications/
 
     else
       hdiutil attach -mountpoint $mountpoint $dest
@@ -132,14 +132,18 @@ do
 done
 
 # 6. Cloning vagrant repos
-log "Closing vagrant repos"
-#mkdir -p ~/dev
-#cd ~/dev/
-#for repo in "${vagrantRepos[@]}"
-#do
-#  git clone $repo
-#done
+log "Cloning vagrant repos"
+mkdir -p ~/dev
+cd ~/dev/
+for repo in "${vagrantRepos[@]}"
+do
+ git clone $repo
+done
 
-
-echo '       * * * * * * HYPERGENESIS REVELATION * * * * * * '
-echo '               Hooray! Everything seems setup'
+echo '           ________  _            '
+echo '          |_   __  |(_)           '
+echo '            | |_ \_|__   _ .--.   '
+echo '            |  _|  [  | [ `.-. |  '
+echo '           _| |_    | |  | | | |  '
+echo '          |_____|  [___][___||__] '
+echo '                                  '
