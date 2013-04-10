@@ -12,7 +12,7 @@ dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
 # Apps to install
-apps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm)
+apps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio)
 
 # URLs for app downloads
 # Make sure all apps listed above have associated urls
@@ -25,9 +25,12 @@ virtualbox_url='http://download.virtualbox.org/virtualbox/4.2.10/VirtualBox-4.2.
 sublime_url='http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.1.dmg'
 evernote_url='http://www.evernote.com/about/download/get.php?file=EvernoteMac'
 iterm_url='https://iterm2.googlecode.com/files/iTerm2-1_0_0_20130319.zip'
+sequel_url='http://sequel-pro.googlecode.com/files/sequel-pro-1.0.1.dmg'
+rdio_url='http://www.rdio.com/media/static/desktop/mac/Rdio.dmg'
 
 
 # An array of various vagrant repos to checkout
+vagrantCheckoutDir="$HOME/dev"
 vagrantRepos=('git@github.com:punkave/punkave-vagrant-lamp.git')
 
 #
@@ -126,18 +129,24 @@ echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * '
 
 
 log "Installing Apps"
-for app in "${apps[@]}"
-do
+
+for app in "${apps[@]}"; do
   installApp $app $(eval "echo \$${app}_url") # Ew
 done
 
 # 6. Cloning vagrant repos
 log "Cloning vagrant repos"
-mkdir -p ~/dev
-cd ~/dev/
-for repo in "${vagrantRepos[@]}"
-do
- git clone $repo
+mkdir -p $vagrantCheckoutDir && cd $vagrantCheckoutDir
+
+for repo in "${vagrantRepos[@]}"; do
+  basename=$(basename "$fullfile")
+  name="${filename%.*}"
+  [ ! -d $name ] && (
+    git clone $repo $name
+    cd $name
+    git submodule init
+    git submodule update
+  )
 done
 
 echo '           ________  _            '
