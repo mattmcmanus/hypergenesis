@@ -178,16 +178,23 @@ done
 
 # 6. Cloning vagrant repos
 log "Cloning vagrant repos"
-mkdir -p $vagrantCheckoutDir && cd $vagrantCheckoutDir
+mkdir -p $vagrantCheckoutDir
 
 for repo in "${vagrantRepos[@]}"; do
+  cd $vagrantCheckoutDir
+
   basename=$(basename "$fullfile")
   name="${filename%.*}"
-  [ ! -d $name ] && (
+
+  [ ! -d $name ] && 
+  (
     git clone $repo $name
-    cd $name
-    git submodule init
-    git submodule update
+    [ -e $name/.gitmodules ] &&
+    (
+      cd $name
+      git submodule init
+      git submodule update
+    )
   )
 done
 
