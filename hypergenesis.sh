@@ -11,7 +11,11 @@ brewInstalls='git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx 
 dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
+nodeVersion='0.10'
+
 # Apps to install
+#  - Make sure the name you use here is at least partially what the installed .app folder will be
+#    This will make sure it doesn't try and reinstall it
 apps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio)
 
 # URLs for app downloads
@@ -27,51 +31,67 @@ evernote_url='http://www.evernote.com/about/download/get.php?file=EvernoteMac'
 iterm_url='https://iterm2.googlecode.com/files/iTerm2-1_0_0_20130319.zip'
 sequel_url='http://sequel-pro.googlecode.com/files/sequel-pro-1.0.1.dmg'
 rdio_url='http://www.rdio.com/media/static/desktop/mac/Rdio.dmg'
+heroku_url='https://toolbelt.heroku.com/download/osx'
 
 
 # An array of various vagrant repos to checkout
 vagrantCheckoutDir="$HOME/dev"
 vagrantRepos=('git@github.com:punkave/punkave-vagrant-lamp.git')
 
+
 #
 #     Functions make things easier!
 # - - - - - - - - - - - - - - - - - - - - - -
 
-function log {
+log() {
   echo ""
   echo " ==> $1"
   echo ""
 }
 
-function installApp() {
+# Install an application
+# 
+# This function is pretty limited. Currently it can handle these scenarios
+# - a dmg with an .app folder
+# - a dmg with a .pkg file
+# - a zip with an .app folder
+# 
+# It could be decoupled some to more dynamically handle more situations (zip -> pkg)
+
+installApp() {
   name=$1
   url=$2
-  # A quick check to see if the app is already installed
-  [ ! -n "`find /Applications -maxdepth 1 -iname *$name*`" ] && (
+  
+  # Is the app is already installed?
+  [ ! -n "`find /Applications -maxdepth 1 -iname *$name*`" ] && 
+  (
     shopt -s nullglob
   
     cd ~/Downloads/
+
+    fileType=${url##*.}
     
     # We need to account for zips as well as dmgs
-    [ "${url##*.}" == 'zip' ] && dest="$name.zip" || dest="$name.dmg"
+    [ $fileType == 'zip' ] && dest="$name.zip" || dest="$name.dmg"
     mountpoint="/Volumes/$name"
 
-    log "Installing $name from $url to $dest"
+    log "Downloading $name from $url to $dest"
     
-    [ ! -e $dest ] && curl -L -o $dest "$url"
+    [ ! -e $dest ] && 
+    curl -L -o $dest "$url" --progress-bar
     
-    if [ "${dest##*.}" == 'zip' ]; then
+    if [ "$fileType" == 'zip' ]; then
       unzip $dest -q -d /Applications/
 
     else
-      hdiutil attach -mountpoint $mountpoint $dest
+      hdiutil attach -quiet -mountpoint $mountpoint $dest
       # Test if there is a pkg or app file and run the appropriate installer
       cd $mountpoint
       [ -e "`echo *.pkg`" ] && sudo installer -package *.pkg -target /
       [ -e "`echo *.app`" ] && cp -R *.app /Applications/
       cd ~
-      sleep 5
-      hdiutil detach $mountpoint -force
+      sleep 3 # Give disk activity a chance to stop so hdiutil detach will not fail with a "busy device"
+      hdiutil detach $mountpoint -force -quiet
     fi
     rm $HOME/Downloads/$dest
 
@@ -95,37 +115,58 @@ echo '	      /____/_/          / /_/ /  __/ / / /  __(__  ) (__  ) '
 echo '	                        \____/\___/_/ /_/\___/____/_/____/  '                                                      
 echo ''
 echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * '
+echo ''
+echo 'Please make sure you have XCode install and have install the command line tools'
+echo ''
+echo 'This script will do the follow:'
+echo ''
+echo '1. Install homebrew'
+echo "2. brew install $brewInstalls"
+echo "3. Setup your dotfiles ($dotfiles_repo) into $dotfiles_location"
+echo "4. Install NVM and node $nodeVersion"
+echo "5. Install ${apps[*]}"
+echo "5. Setup vagrant development repos (${vagrantRepos[*]}) into $vagrantCheckoutDir"
+echo ''
 
+read -p "Are you ok with this? " -n 1
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    exit 1
+fi
 
 #0. Install XCode
 # Not sure how to check this just yet
 
 
-[ ! $(which brew) ] && (
+[ ! $(which brew) ] && 
+(
   #log "Installing Homebrew"
   ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
   
   log "Installing goodies from homebrew"  
   brew update
   brew install $brewInstalls
-)
+) || log "Homebrew already installed. Skipping..."
 
 
-[ ! -d $dotfiles_location ] && (
+[ ! -d $dotfiles_location ] && 
+(
   log "Setting up your dotfiles repo"
   cd $HOME
   git clone $dotfiles_repo $dotfiles_location
   cd .dotfiles
   script/bootstrap
   source ~/.bash_profile
-)
+) || log "dotfiles already installed. Skipping..."
 
-[ ! -d $HOME/.nvm ] && (
+
+[ ! -d $HOME/.nvm ] && 
+(
   log "Installing NVM"
   curl https://raw.github.com/creationix/nvm/master/install.sh | sh
   source ~/.bash_profile
-  nvm install 0.10
-)
+  nvm install $nodeVersion
+) || log "NVM already installed. Skipping..."
 
 
 log "Installing Apps"
@@ -133,6 +174,7 @@ log "Installing Apps"
 for app in "${apps[@]}"; do
   installApp $app $(eval "echo \$${app}_url") # Ew
 done
+
 
 # 6. Cloning vagrant repos
 log "Cloning vagrant repos"
