@@ -118,12 +118,12 @@ echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * '
 echo ''
 echo 'Please make sure you have XCode install and have install the command line tools'
 echo ''
-echo 'This script will do the follow:'
+echo 'This script will do the following:'
 echo ''
 echo '1. Install homebrew'
 echo "2. brew install $brewInstalls"
 echo "3. Setup your dotfiles ($dotfiles_repo) into $dotfiles_location"
-echo "4. Install NVM and node $nodeVersion"
+echo "4. Install NVM and node.js $nodeVersion"
 echo "5. Install ${apps[*]}"
 echo "5. Setup vagrant development repos (${vagrantRepos[*]}) into $vagrantCheckoutDir"
 echo ''
