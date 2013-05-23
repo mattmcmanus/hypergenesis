@@ -20,12 +20,12 @@ apps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm 
 
 # URLs for app downloads
 # Make sure all apps listed above have associated urls
-vagrant_url='http://files.vagrantup.com/packages/64e360814c3ad960d810456add977fd4c7d47ce6/Vagrant.dmg' #1.1.5
+vagrant_url='http://files.vagrantup.com/packages/7e400d00a3c5a0fdf2809c8b5001a035415a607b/Vagrant-1.2.2.dmg'
 chrome_url='https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
-firefox_url='https://download.mozilla.org/?product=firefox-20.0&os=osx&lang=en-US'
+firefox_url='https://download.mozilla.org/?product=firefox-21.0&os=osx&lang=en-US'
 dropbox_url='https://www.dropbox.com/download?plat=mac'
 password_url='https://d13itkw33a7sus.cloudfront.net/dist/1P/mac/1Password-3.8.20.zip'
-virtualbox_url='http://download.virtualbox.org/virtualbox/4.2.10/VirtualBox-4.2.10-84104-OSX.dmg'
+virtualbox_url='http://download.virtualbox.org/virtualbox/4.2.12/VirtualBox-4.2.12-84980-OSX.dmg'
 sublime_url='http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.1.dmg'
 evernote_url='http://www.evernote.com/about/download/get.php?file=EvernoteMac'
 iterm_url='https://iterm2.googlecode.com/files/iTerm2-1_0_0_20130319.zip'
