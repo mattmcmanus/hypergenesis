@@ -152,9 +152,8 @@ fi
 [ ! -d $dotfiles_location ] && 
 (
   log "Setting up your dotfiles repo"
-  cd $HOME
   git clone $dotfiles_repo $dotfiles_location
-  cd .dotfiles
+  cd $dotfiles_location
   script/bootstrap
   source ~/.bash_profile
 ) || log "dotfiles already installed. Skipping..."
