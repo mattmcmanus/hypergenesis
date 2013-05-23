@@ -8,7 +8,7 @@ It's designed around the assumption that (1.) most of you configuration settings
 
 ## Run it from a fresh install
 
-1. Install XCode & the command line tools
+1. Install XCode & the command line tools. [Need more info?](http://stackoverflow.com/a/9329325/109589)
 2. Tweak the script to your needs. *(Most of the configuration is in variables at the top)*
 3. Run `sh hypergenesis.sh`
 
@@ -33,7 +33,7 @@ $ sh hypergenesis.sh
 
        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-Please make sure you have XCode install and have install the command line tools
+Please ensure that you have installed XCode and its command line tools. See README.md for more details
 
 This script will do the following:
 
