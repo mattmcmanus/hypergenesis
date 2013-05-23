@@ -16,20 +16,36 @@ I recommend forking the script and tweaking it. It's simple and only covers so m
 
 ## What does it do?
 
-1. Installs `homebrew`
-2. Using homebrew, installs a bunch of useful tools like `git grc coreutils ack findutils gnu-tar`
-3. Sets up your .dotfiles
-  * You'll definitely want to tweak this. My repo is based off of [holmans dotfiles](https://github.com/holman/dotfiles) 
-4. Installs [NVM](https://github.com/creationix/nvm), then installs node 0.10
-5. Installs several useful DMG'ed apps
-  * chrome
-  * virtualbox
-  * vagrant
-  * dropbox
-  * onepassword
-  * sublimetext2
-  * evernote
-  * and more!
+Don't worry, it will tell you exactly before you run it: 
+
+```
+$ sh hypergenesis.sh
+
+       * * * * * * * * * * * * * * INITIATING * * * * * * * * * * * * * *
+
+            __  __
+           / / / /_  ______  ___  _______
+          / /_/ / / / / __ \/ _ \/ _____/                     _
+         / __  / /_/ / /_/ /  __/ / ____/__  ____  ___  _____(_)____
+        /_/ /_/\__, / .___/\___/_/ / __/ _ \/ __ \/ _ \/ ___/ / ___/
+              /____/_/          / /_/ /  __/ / / /  __(__  ) (__  )
+                                \____/\___/_/ /_/\___/____/_/____/
+
+       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Please make sure you have XCode install and have install the command line tools
+
+This script will do the following:
+
+1. Install homebrew
+2. brew install git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed
+3. Setup your dotfiles (git@github.com:mattmcmanus/dotfiles.git) into /Users/matt/.dotfiles
+4. Install NVM and node.js 0.10
+5. Install chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio
+5. Setup vagrant development repos (git@github.com:punkave/punkave-vagrant-lamp.git) into /Users/matt/dev
+
+Are you ok with this?
+```
 
 ## Describe to me hypergenesis's genesis
 
