@@ -12,6 +12,7 @@ dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
 nodeVersion='0.10'
+rubyVersion='1.9.3'
 
 # Apps to install
 #  - Make sure the name you use here is at least partially what the installed .app folder will be
@@ -124,8 +125,9 @@ echo '1. Install homebrew'
 echo "2. brew install $brewInstalls"
 echo "3. Setup your dotfiles ($dotfiles_repo) into $dotfiles_location"
 echo "4. Install NVM and node.js $nodeVersion"
-echo "5. Install ${apps[*]}"
-echo "5. Setup vagrant development repos (${vagrantRepos[*]}) into $vagrantCheckoutDir"
+echo "5. Install RVM and ruby $rubyVersion"
+echo "6. Install ${apps[*]}"
+echo "7. Setup vagrant development repos (${vagrantRepos[*]}) into $vagrantCheckoutDir"
 echo ''
 
 read -p "Are you ok with this? " -n 1
@@ -167,6 +169,12 @@ fi
   nvm install $nodeVersion
 ) || log "NVM already installed. Skipping..."
 
+
+[ ! -d $HOME/.rvm ] && 
+(
+  log "Installing RVM"
+  curl -L https://get.rvm.io | bash -s stable --ruby=$rubyVersion
+) || log "RVM already installed. Skipping..."
 
 log "Installing Apps"
 

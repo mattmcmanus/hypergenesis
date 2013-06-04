@@ -41,8 +41,9 @@ This script will do the following:
 2. brew install git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed
 3. Setup your dotfiles (git@github.com:mattmcmanus/dotfiles.git) into /Users/matt/.dotfiles
 4. Install NVM and node.js 0.10
-5. Install chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio
-5. Setup vagrant development repos (git@github.com:punkave/punkave-vagrant-lamp.git) into /Users/matt/dev
+5. Install RVM and ruby 1.9.3
+6. Install chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio
+7. Setup vagrant development repos (git@github.com:punkave/punkave-vagrant-lamp.git) into /Users/matt/dev
 
 Are you ok with this?
 ```
