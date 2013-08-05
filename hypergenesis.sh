@@ -6,7 +6,7 @@ set -e
 #             Configuration
 # - - - - - - - - - - - - - - - - - - - - - -
 
-brewInstalls='git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed'
+brewInstalls='git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed mobile-shell'
 
 dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
