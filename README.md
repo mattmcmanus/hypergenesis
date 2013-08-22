@@ -37,13 +37,14 @@ Please ensure that you have installed XCode and its command line tools. See READ
 
 This script will do the following:
 
-1. Install homebrew
-2. brew install git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed
+2. Install homebrew
+2. brew install git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed mobile-shell nmap
 3. Setup your dotfiles (git@github.com:mattmcmanus/dotfiles.git) into /Users/matt/.dotfiles
 4. Install NVM and node.js 0.10
-5. Install RVM and ruby 1.9.3
-6. Install chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio
-7. Setup vagrant development repos (git@github.com:punkave/punkave-vagrant-lamp.git) into /Users/matt/dev
+5. npm install -g jsontool node-dev express jade bunyan grunt-cli
+6. Install RVM and ruby 1.9.3
+7. Install chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio
+8. Setup vagrant development repos (git@github.com:punkave/punkave-vagrant-lamp.git) into /Users/matt/dev
 
 Are you ok with this?
 ```

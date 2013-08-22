@@ -6,7 +6,7 @@ set -e
 #             Configuration
 # - - - - - - - - - - - - - - - - - - - - - -
 
-brewInstalls='git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed mobile-shell'
+brewInstalls=(git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed mobile-shell nmap)
 
 dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
@@ -14,10 +14,13 @@ dotfiles_location="$HOME/.dotfiles"
 nodeVersion='0.10'
 rubyVersion='1.9.3'
 
+# Node apps to npm install -g
+nodeGlobalModules=(jsontool node-dev express jade bunyan grunt-cli)
+
 # Apps to install
 #  - Make sure the name you use here is at least partially what the installed .app folder will be
 #    This will make sure it doesn't try and reinstall it
-apps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio)
+osxApps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio)
 
 # URLs for app downloads
 # Make sure all apps listed above have associated urls
@@ -96,7 +99,7 @@ installApp() {
     fi
     rm $HOME/Downloads/$dest
 
-  ) || log "$name already installed"
+  ) || echo " - $name already installed"
 }
 
 
@@ -129,13 +132,14 @@ echo 'Please ensure that you have installed XCode and its command line tools. Se
 echo ''
 echo 'This script will do the following:'
 echo ''
-echo '1. Install homebrew'
-echo "2. brew install $brewInstalls"
+echo '2. Install homebrew'
+echo "2. brew install ${brewInstalls[*]}"
 echo "3. Setup your dotfiles ($dotfiles_repo) into $dotfiles_location"
 echo "4. Install NVM and node.js $nodeVersion"
-echo "5. Install RVM and ruby $rubyVersion"
-echo "6. Install ${apps[*]}"
-echo "7. Setup vagrant development repos (${vagrantRepos[*]}) into $vagrantCheckoutDir"
+echo "5. npm install -g ${nodeGlobalModules[*]}"
+echo "6. Install RVM and ruby $rubyVersion"
+echo "7. Install ${osxApps[*]}"
+echo "8. Setup vagrant development repos (${vagrantRepos[*]}) into $vagrantCheckoutDir"
 echo ''
 
 read -p "Are you ok with this? " -n 1
@@ -143,22 +147,30 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
     exit 1
 fi
+echo ""
 
 #0. Install XCode
 # Not sure how to check this just yet
 
-
+# Install homebrew
 [ ! $(which brew) ] && 
 (
   #log "Installing Homebrew"
   ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
-  
-  log "Installing goodies from homebrew"  
-  brew update
-  brew install $brewInstalls
-) || log "Homebrew already installed. Skipping..."
+) || log "Homebrew already installed. Updating and installing apps"
+
+brew update
+
+for app in "${brewInstalls[@]}"; do
+  [ $(brew info $app | grep "Not installed") ] &&
+  (
+    log "brew install $app"
+    brew install $app
+   ) || echo " - $app already installed"
+done
 
 
+# Setup dotfiles
 [ ! -d $dotfiles_location ] && 
 (
   log "Setting up your dotfiles repo"
@@ -169,13 +181,23 @@ fi
 ) || log "dotfiles already installed. Skipping..."
 
 
+# Install node
 [ ! -d $HOME/.nvm ] && 
 (
   log "Installing NVM"
   curl https://raw.github.com/creationix/nvm/master/install.sh | sh
   source ~/.bash_profile
   nvm install $nodeVersion
-) || log "NVM already installed. Skipping..."
+  nvm alias default 0.10
+) || log "NVM already installed. Installing apps..."
+
+for module in "${nodeGlobalModules[@]}"; do
+  [[ -z $(npm ls -gp $module) ]] &&
+  (
+    log "npm install -g $module"
+    npm install -g $module
+  ) || echo " - $module already installed"
+done
 
 
 [ ! -d $HOME/.rvm ] && 
@@ -184,9 +206,10 @@ fi
   curl -L https://get.rvm.io | bash -s stable --ruby=$rubyVersion
 ) || log "RVM already installed. Skipping..."
 
-log "Installing Apps"
 
-for app in "${apps[@]}"; do
+log "Installing OS X Apps"
+
+for app in "${osxApps[@]}"; do
   installApp $app $(eval "echo \$${app}_url") # Ew
 done
 
