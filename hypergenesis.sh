@@ -104,6 +104,14 @@ installApp() {
 #         Commence Installations
 # - - - - - - - - - - - - - - - - - - - - - -
 
+[[ ! $(pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI) ]] &&
+(
+  echo "ERROR: XCode command line tools are NOT installed. Exiting..."
+  echo ""
+  echo "If you need help installing, go to http://stackoverflow.com/a/9329325/109589"
+  exit 1 
+)
+
 echo ''
 echo '       * * * * * * * * * * * * * * INITIATING * * * * * * * * * * * * * * '
 echo''
