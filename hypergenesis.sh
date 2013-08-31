@@ -20,22 +20,26 @@ nodeGlobalModules=(jsontool node-dev express jade bunyan grunt-cli)
 # Apps to install
 #  - Make sure the name you use here is at least partially what the installed .app folder will be
 #    This will make sure it doesn't try and reinstall it
-osxApps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio)
+osxApps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio arq vlc cloudup github everpix)
 
 # URLs for app downloads
 # Make sure all apps listed above have associated urls
-vagrant_url='http://files.vagrantup.com/packages/7e400d00a3c5a0fdf2809c8b5001a035415a607b/Vagrant-1.2.2.dmg'
+vagrant_url='http://files.vagrantup.com/packages/7ec0ee1d00a916f80b109a298bab08e391945243/Vagrant-1.2.7.dmg'
 chrome_url='https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
-firefox_url='https://download.mozilla.org/?product=firefox-21.0&os=osx&lang=en-US'
+firefox_url='https://download.mozilla.org/?product=firefox-23.0.1&os=osx&lang=en-US'
 dropbox_url='https://www.dropbox.com/download?plat=mac'
-password_url='https://d13itkw33a7sus.cloudfront.net/dist/1P/mac/1Password-3.8.20.zip'
-virtualbox_url='http://download.virtualbox.org/virtualbox/4.2.12/VirtualBox-4.2.12-84980-OSX.dmg'
-sublime_url='http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.1.dmg'
+password_url='https://d13itkw33a7sus.cloudfront.net/dist/1P/mac/1Password-3.8.21.zip'
+virtualbox_url='http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg'
+sublime_url='http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%20Build%203047.dmg'
 evernote_url='http://www.evernote.com/about/download/get.php?file=EvernoteMac'
-iterm_url='https://iterm2.googlecode.com/files/iTerm2-1_0_0_20130319.zip'
-sequel_url='http://sequel-pro.googlecode.com/files/sequel-pro-1.0.1.dmg'
+iterm_url='http://iterm2.com/downloads/stable/iTerm2_v1_0_0.zip'
+sequel_url='http://sequel-pro.googlecode.com/files/sequel-pro-1.0.2.dmg'
 rdio_url='http://www.rdio.com/media/static/desktop/mac/Rdio.dmg'
 heroku_url='https://toolbelt.heroku.com/download/osx'
+arq_url='http://www.haystacksoftware.com/arq/Arq.zip'
+vlc_url='https://get.videolan.org/vlc/2.0.8/macosx/vlc-2.0.8-intel64.dmg'
+cloudup_url='https://cloudup.com/download/mac'
+github_url='https://central.github.com/mac/latest'
 
 
 # An array of various vagrant repos to checkout
@@ -54,36 +58,36 @@ log() {
 }
 
 # Install an application
-# 
+#
 # This function is pretty limited. Currently it can handle these scenarios
 # - a dmg with an .app folder
 # - a dmg with a .pkg file
 # - a zip with an .app folder
-# 
+#
 # It could be decoupled some to more dynamically handle more situations (zip -> pkg)
 
 installApp() {
   name=$1
   url=$2
-  
+
   # Is the app is already installed?
-  [ ! -n "`find /Applications -maxdepth 1 -iname *$name*`" ] && 
+  [ ! -n "`find /Applications -maxdepth 1 -iname *$name*`" ] &&
   (
     shopt -s nullglob
-  
+
     cd ~/Downloads/
 
     fileType=${url##*.}
-    
+
     # We need to account for zips as well as dmgs
     [ $fileType == 'zip' ] && dest="$name.zip" || dest="$name.dmg"
     mountpoint="/Volumes/$name"
 
     log "Downloading $name from $url to $dest"
-    
-    [ ! -e $dest ] && 
+
+    [ ! -e $dest ] &&
     curl -L -o $dest "$url" --progress-bar
-    
+
     if [ "$fileType" == 'zip' ]; then
       unzip $dest -q -d /Applications/
 
@@ -112,7 +116,7 @@ installApp() {
   echo "ERROR: XCode command line tools are NOT installed. Exiting..."
   echo ""
   echo "If you need help installing, go to http://stackoverflow.com/a/9329325/109589"
-  exit 1 
+  exit 1
 )
 
 echo ''
@@ -124,7 +128,7 @@ echo '	  / /_/ / / / / __ \/ _ \/ _____/                     _     '
 echo '	 / __  / /_/ / /_/ /  __/ / ____/__  ____  ___  _____(_)____'
 echo '	/_/ /_/\__, / .___/\___/_/ / __/ _ \/ __ \/ _ \/ ___/ / ___/'
 echo '	      /____/_/          / /_/ /  __/ / / /  __(__  ) (__  ) '
-echo '	                        \____/\___/_/ /_/\___/____/_/____/  '                                                      
+echo '	                        \____/\___/_/ /_/\___/____/_/____/  '
 echo ''
 echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * '
 echo ''
@@ -153,7 +157,7 @@ echo ""
 # Not sure how to check this just yet
 
 # Install homebrew
-[ ! $(which brew) ] && 
+[ ! $(which brew) ] &&
 (
   #log "Installing Homebrew"
   ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
@@ -171,7 +175,7 @@ done
 
 
 # Setup dotfiles
-[ ! -d $dotfiles_location ] && 
+[ ! -d $dotfiles_location ] &&
 (
   log "Setting up your dotfiles repo"
   git clone $dotfiles_repo $dotfiles_location
@@ -182,7 +186,7 @@ done
 
 
 # Install node
-[ ! -d $HOME/.nvm ] && 
+[ ! -d $HOME/.nvm ] &&
 (
   log "Installing NVM"
   curl https://raw.github.com/creationix/nvm/master/install.sh | sh
@@ -200,7 +204,7 @@ for module in "${nodeGlobalModules[@]}"; do
 done
 
 
-[ ! -d $HOME/.rvm ] && 
+[ ! -d $HOME/.rvm ] &&
 (
   log "Installing RVM"
   curl -L https://get.rvm.io | bash -s stable --ruby=$rubyVersion
@@ -224,7 +228,7 @@ for repo in "${vagrantRepos[@]}"; do
   basename=$(basename "$fullfile")
   name="${filename%.*}"
 
-  [ ! -d $name ] && 
+  [ ! -d $name ] &&
   (
     git clone $repo $name
     [ -e $name/.gitmodules ] &&
