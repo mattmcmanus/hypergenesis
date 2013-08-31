@@ -20,10 +20,11 @@ nodeGlobalModules=(jsontool node-dev express jade bunyan grunt-cli)
 # Apps to install
 #  - Make sure the name you use here is at least partially what the installed .app folder will be
 #    This will make sure it doesn't try and reinstall it
-osxApps=(chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio arq vlc cloudup github everpix)
+osxApps=(alfred chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio arq vlc cloudup github everpix)
 
 # URLs for app downloads
 # Make sure all apps listed above have associated urls
+alfred_url='http://cachefly.alfredapp.com/Alfred_2.0.7_205.zip'
 vagrant_url='http://files.vagrantup.com/packages/7ec0ee1d00a916f80b109a298bab08e391945243/Vagrant-1.2.7.dmg'
 chrome_url='https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
 firefox_url='https://download.mozilla.org/?product=firefox-23.0.1&os=osx&lang=en-US'
