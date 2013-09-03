@@ -20,7 +20,7 @@ nodeGlobalModules=(jsontool node-dev express jade bunyan grunt-cli)
 # Apps to install
 #  - Make sure the name you use here is at least partially what the installed .app folder will be
 #    This will make sure it doesn't try and reinstall it
-osxApps=(alfred chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio arq vlc cloudup github everpix)
+osxApps=(alfred chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio arq vlc)
 
 # URLs for app downloads
 # Make sure all apps listed above have associated urls
@@ -40,7 +40,6 @@ heroku_url='https://toolbelt.heroku.com/download/osx'
 arq_url='http://www.haystacksoftware.com/arq/Arq.zip'
 vlc_url='https://get.videolan.org/vlc/2.0.8/macosx/vlc-2.0.8-intel64.dmg'
 cloudup_url='https://cloudup.com/download/mac'
-github_url='https://central.github.com/mac/latest'
 
 
 # An array of various vagrant repos to checkout
@@ -90,7 +89,7 @@ installApp() {
     curl -L -o $dest "$url" --progress-bar
 
     if [ "$fileType" == 'zip' ]; then
-      unzip $dest -q -d /Applications/
+      unzip $dest -d /Applications/
 
     else
       hdiutil attach -quiet -mountpoint $mountpoint $dest
@@ -158,16 +157,17 @@ echo ""
 # Not sure how to check this just yet
 
 # Install homebrew
-[ ! $(which brew) ] &&
+[[ ! $(which brew) ]] &&
 (
   #log "Installing Homebrew"
   ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+  brew doctor
 ) || log "Homebrew already installed. Updating and installing apps"
 
 brew update
 
 for app in "${brewInstalls[@]}"; do
-  [ $(brew info $app | grep "Not installed") ] &&
+  [[ $(brew info $app | grep "Not installed") ]] &&
   (
     log "brew install $app"
     brew install $app
