@@ -6,13 +6,13 @@ set -e
 #             Configuration
 # - - - - - - - - - - - - - - - - - - - - - -
 
-brewInstalls=(git grc coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed mobile-shell nmap tree wget watch phantomjs macvim)
+brewInstalls=(git grc brew-cask coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed mobile-shell nmap tree wget watch phantomjs macvim)
 
 dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
 nodeVersion='0.10'
-rubyVersion='1.9.3'
+rubyVersion='2.0'
 
 # Node apps to npm install -g
 nodeGlobalModules=(jsontool node-dev express jade bunyan grunt-cli)
@@ -20,32 +20,7 @@ nodeGlobalModules=(jsontool node-dev express jade bunyan grunt-cli)
 # Apps to install
 #  - Make sure the name you use here is at least partially what the installed .app folder will be
 #    This will make sure it doesn't try and reinstall it
-osxApps=(alfred chrome virtualbox vagrant password dropbox sublime evernote firefox iterm sequel rdio arq vlc)
-
-# URLs for app downloads
-# Make sure all apps listed above have associated urls
-alfred_url='http://cachefly.alfredapp.com/Alfred_2.0.7_205.zip'
-vagrant_url='http://files.vagrantup.com/packages/7ec0ee1d00a916f80b109a298bab08e391945243/Vagrant-1.2.7.dmg'
-chrome_url='https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
-firefox_url='https://download.mozilla.org/?product=firefox-23.0.1&os=osx&lang=en-US'
-dropbox_url='https://www.dropbox.com/download?plat=mac'
-password_url='https://d13itkw33a7sus.cloudfront.net/dist/1P/mac/1Password-3.8.21.zip'
-virtualbox_url='http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg'
-sublime_url='http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%20Build%203047.dmg'
-evernote_url='http://www.evernote.com/about/download/get.php?file=EvernoteMac'
-iterm_url='http://iterm2.com/downloads/stable/iTerm2_v1_0_0.zip'
-sequel_url='http://sequel-pro.googlecode.com/files/sequel-pro-1.0.2.dmg'
-rdio_url='http://www.rdio.com/media/static/desktop/mac/Rdio.dmg'
-heroku_url='https://toolbelt.heroku.com/download/osx'
-arq_url='http://www.haystacksoftware.com/arq/Arq.zip'
-vlc_url='https://get.videolan.org/vlc/2.0.8/macosx/vlc-2.0.8-intel64.dmg'
-cloudup_url='https://cloudup.com/download/mac'
-
-
-# An array of various vagrant repos to checkout
-vagrantCheckoutDir="$HOME/dev"
-vagrantRepos=('git@github.com:punkave/punkave-vagrant-lamp.git')
-
+brewCaskInstalls=(alfred google-chrome google-hangouts transmission fluid virtualbox vagrant onepassword dropbox sublime-text evernote firefox iterm2 arq vlc qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql webp-quicklook suspicious-package)
 
 #
 #     Functions make things easier!
@@ -65,47 +40,6 @@ log() {
 # - a zip with an .app folder
 #
 # It could be decoupled some to more dynamically handle more situations (zip -> pkg)
-
-installApp() {
-  name=$1
-  url=$2
-
-  # Is the app is already installed?
-  [ ! -n "`find /Applications -maxdepth 1 -iname *$name*`" ] &&
-  (
-    shopt -s nullglob
-
-    cd ~/Downloads/
-
-    fileType=${url##*.}
-
-    # We need to account for zips as well as dmgs
-    [ $fileType == 'zip' ] && dest="$name.zip" || dest="$name.dmg"
-    mountpoint="/Volumes/$name"
-
-    log "Downloading $name from $url to $dest"
-
-    [ ! -e $dest ] &&
-    curl -L -o $dest "$url" --progress-bar
-
-    if [ "$fileType" == 'zip' ]; then
-      unzip $dest -d /Applications/
-
-    else
-      hdiutil attach -quiet -mountpoint $mountpoint $dest
-      # Test if there is a pkg or app file and run the appropriate installer
-      cd $mountpoint
-      [ -e "`echo *.pkg`" ] && sudo installer -package *.pkg -target /
-      [ -e "`echo *.app`" ] && cp -R *.app /Applications/
-      cd ~
-      sleep 3 # Give disk activity a chance to stop so hdiutil detach will not fail with a "busy device"
-      hdiutil detach $mountpoint -force -quiet
-    fi
-    rm $HOME/Downloads/$dest
-
-  ) || echo " - $name already installed"
-}
-
 
 #
 #         Commence Installations
@@ -132,18 +66,15 @@ echo '	                        \____/\___/_/ /_/\___/____/_/____/  '
 echo ''
 echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * '
 echo ''
-echo 'Please ensure that you have installed XCode and its command line tools. See README.md for more details'
-echo ''
 echo 'This script will do the following:'
 echo ''
-echo '2. Install homebrew'
+echo '1. Install homebrew'
 echo "2. brew install ${brewInstalls[*]}"
-echo "3. Setup your dotfiles ($dotfiles_repo) into $dotfiles_location"
-echo "4. Install NVM and node.js $nodeVersion"
-echo "5. npm install -g ${nodeGlobalModules[*]}"
-echo "6. Install RVM and ruby $rubyVersion"
-echo "7. Install ${osxApps[*]}"
-echo "8. Setup vagrant development repos (${vagrantRepos[*]}) into $vagrantCheckoutDir"
+echo "3. brew cask install ${brewCaskInstalls[*]}"
+echo "4. Setup your dotfiles ($dotfiles_repo) into $dotfiles_location"
+echo "5. Install NVM and node.js $nodeVersion"
+echo "6. npm install -g ${nodeGlobalModules[*]}"
+echo "7. Install RVM and ruby $rubyVersion"
 echo ''
 
 read -p "Are you ok with this? " -n 1
@@ -153,9 +84,6 @@ then
 fi
 echo ""
 
-#0. Install XCode
-# Not sure how to check this just yet
-
 # Install homebrew
 [[ ! $(which brew) ]] &&
 (
@@ -164,6 +92,7 @@ echo ""
   brew doctor
 ) || log "Homebrew already installed. Updating and installing apps"
 
+brew tap phinze/homebrew-cask
 brew update
 
 for app in "${brewInstalls[@]}"; do
@@ -174,6 +103,16 @@ for app in "${brewInstalls[@]}"; do
    ) || echo " - $app already installed"
 done
 
+for app in "${brewCaskInstalls[@]}"; do
+  [[ $(brew cask info $app | grep "Not installed") ]] &&
+  (
+    log "brew cask install $app"
+    brew cask install $app
+   ) || echo " - $app already installed"
+done
+
+# Reload Quicklook
+qlmanage -r
 
 # Setup dotfiles
 [ ! -d $dotfiles_location ] &&
@@ -211,35 +150,6 @@ done
   curl -L https://get.rvm.io | bash -s stable --ruby=$rubyVersion
 ) || log "RVM already installed. Skipping..."
 
-
-log "Installing OS X Apps"
-
-for app in "${osxApps[@]}"; do
-  installApp $app $(eval "echo \$${app}_url") # Ew
-done
-
-
-# 6. Cloning vagrant repos
-log "Cloning vagrant repos"
-mkdir -p $vagrantCheckoutDir
-
-for repo in "${vagrantRepos[@]}"; do
-  cd $vagrantCheckoutDir
-
-  basename=$(basename "$fullfile")
-  name="${filename%.*}"
-
-  [ ! -d $name ] &&
-  (
-    git clone $repo $name
-    [ -e $name/.gitmodules ] &&
-    (
-      cd $name
-      git submodule init
-      git submodule update
-    )
-  )
-done
 
 echo '           ________  _            '
 echo '          |_   __  |(_)           '
