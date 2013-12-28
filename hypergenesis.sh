@@ -82,7 +82,12 @@ echo ""
   brew doctor
 ) || log "Homebrew already installed. Updating and installing apps"
 
-brew tap phinze/homebrew-cask
+[[ ! $(brew tap | grep "phinze/homebrew-cask") ]] &&
+(
+  log "brew tap $app"
+  brew tap phinze/homebrew-cask
+)
+
 brew update
 
 for app in "${brewInstalls[@]}"; do
