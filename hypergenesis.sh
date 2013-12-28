@@ -18,8 +18,6 @@ rubyVersion='2.0'
 nodeGlobalModules=(jsontool node-dev express jade bunyan grunt-cli)
 
 # Apps to install
-#  - Make sure the name you use here is at least partially what the installed .app folder will be
-#    This will make sure it doesn't try and reinstall it
 brewCaskInstalls=(alfred google-chrome google-hangouts transmission fluid virtualbox vagrant onepassword dropbox sublime-text evernote firefox iterm2 arq vlc qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql webp-quicklook suspicious-package)
 
 #
@@ -32,22 +30,14 @@ log() {
   echo ""
 }
 
-# Install an application
-#
-# This function is pretty limited. Currently it can handle these scenarios
-# - a dmg with an .app folder
-# - a dmg with a .pkg file
-# - a zip with an .app folder
-#
-# It could be decoupled some to more dynamically handle more situations (zip -> pkg)
-
 #
 #         Commence Installations
 # - - - - - - - - - - - - - - - - - - - - - -
-xcode-select --install
 
 if [[ ! $(pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI) ]]; then
-  echo "ERROR: XCode command line tools are NOT installed. Exiting..."
+  xcode-select --install
+
+  echo "ERROR: XCode command line tools are NOT installed. The install should popup now. Retart your terminal when complete. Exiting..."
   echo ""
   echo "If you need help installing, go to http://stackoverflow.com/a/9329325/109589"
   exit 1
@@ -88,7 +78,7 @@ echo ""
 [[ ! $(which brew) ]] &&
 (
   #log "Installing Homebrew"
-  ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
   brew doctor
 ) || log "Homebrew already installed. Updating and installing apps"
 
