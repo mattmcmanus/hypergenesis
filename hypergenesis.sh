@@ -45,13 +45,12 @@ log() {
 #         Commence Installations
 # - - - - - - - - - - - - - - - - - - - - - -
 
-[[ ! $(pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI) ]] &&
-(
+if [[ ! $(pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI) ]]; then
   echo "ERROR: XCode command line tools are NOT installed. Exiting..."
   echo ""
   echo "If you need help installing, go to http://stackoverflow.com/a/9329325/109589"
   exit 1
-)
+fi
 
 echo ''
 echo '       * * * * * * * * * * * * * * INITIATING * * * * * * * * * * * * * * '
@@ -121,9 +120,7 @@ qlmanage -r
   git clone $dotfiles_repo $dotfiles_location
   cd $dotfiles_location
   script/bootstrap
-  source ~/.bash_profile
 ) || log "dotfiles already installed. Skipping..."
-
 
 # Install node
 [ ! -d $HOME/.nvm ] &&
@@ -134,6 +131,8 @@ qlmanage -r
   nvm install $nodeVersion
   nvm alias default 0.10
 ) || log "NVM already installed. Installing apps..."
+
+source ~/.bash_profile
 
 for module in "${nodeGlobalModules[@]}"; do
   [[ -z $(npm ls -gp $module) ]] &&
