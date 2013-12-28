@@ -44,6 +44,7 @@ log() {
 #
 #         Commence Installations
 # - - - - - - - - - - - - - - - - - - - - - -
+xcode-select --install
 
 if [[ ! $(pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI) ]]; then
   echo "ERROR: XCode command line tools are NOT installed. Exiting..."
