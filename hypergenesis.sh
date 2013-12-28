@@ -34,14 +34,14 @@ log() {
 #         Commence Installations
 # - - - - - - - - - - - - - - - - - - - - - -
 
-if [[ ! $(pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI) ]]; then
-  xcode-select --install
-
-  echo "ERROR: XCode command line tools are NOT installed. The install should popup now. Retart your terminal when complete. Exiting..."
-  echo ""
-  echo "If you need help installing, go to http://stackoverflow.com/a/9329325/109589"
-  exit 1
-fi
+#if [[ ! $(pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI) ]]; then
+#  xcode-select --install
+#
+#  echo "ERROR: XCode command line tools are NOT installed. The install should popup now. Retart your terminal when complete. Exiting..."
+#  echo ""
+#  echo "If you need help installing, go to http://stackoverflow.com/a/9329325/109589"
+#  exit 1
+#fi
 
 echo ''
 echo '       * * * * * * * * * * * * * * INITIATING * * * * * * * * * * * * * * '
