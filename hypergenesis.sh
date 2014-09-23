@@ -6,7 +6,59 @@ set -e
 #             Configuration
 # - - - - - - - - - - - - - - - - - - - - - -
 
-brewInstalls=(git grc brew-cask coreutils ack findutils gnu-tar tmux htop-osx ctags nginx gnu-sed mobile-shell nmap tree wget watch phantomjs macvim)
+brewTaps=(
+  phinze/homebrew-cask
+  thoughtbot/formulae
+)
+
+brewInstalls=(
+  git
+  grc
+  brew-cask
+  rcm
+  gnu-tar
+  tmux
+  htop-osx
+  ctags
+  nginx
+  gnu-sed
+  mobile-shell
+  nmap
+  tree
+  wget
+  watch
+  macvim
+  rabbitmq
+  the_silver_searcher
+ )
+
+# Apps to install
+brewCaskInstalls=(
+  alfred
+  google-chrome
+  google-hangouts
+  google-drive
+  transmission
+  hazel
+  istat-menus
+  bartender
+  little-snitch
+  atom
+  fluid
+  virtualbox
+  vagrant
+  onepassword
+  dropbox
+  evernote
+  firefox
+  iterm2
+  arq
+  vlc
+  qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv
+  betterzipql
+  webp-quicklook
+  suspicious-package
+ )
 
 dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
@@ -15,15 +67,12 @@ nodeVersion='0.10'
 rubyVersion='2.0'
 
 # Node apps to npm install -g
-nodeGlobalModules=(jsontool node-dev express jade bunyan grunt-cli)
+nodeGlobalModules=(jsontool node-dev bunyan grunt-cli)
 
-# Apps to install
-brewCaskInstalls=(alfred google-chrome google-hangouts transmission fluid virtualbox vagrant onepassword dropbox sublime-text evernote firefox iterm2 arq vlc qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql webp-quicklook suspicious-package)
 
 #
 #     Functions make things easier!
 # - - - - - - - - - - - - - - - - - - - - - -
-
 log() {
   echo ""
   echo " ==> $1"
@@ -76,38 +125,32 @@ echo ""
 
 # Install homebrew
 [[ ! $(which brew) ]] &&
-(
-  #log "Installing Homebrew"
-  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)" &&
   brew doctor
-) || log "Homebrew already installed. Updating and installing apps"
 
-[[ ! $(brew tap | grep "phinze/homebrew-cask") ]] &&
-(
-  log "brew tap $app"
-  brew tap phinze/homebrew-cask
-)
+
+# Taps
+for tap in "${brewTaps[@]}"; do
+  [[ ! $(brew tap | grep $tap) ]] && log "brew tap $tap" brew tap $tap
+done
 
 brew update
 
+
+# Brew installs
 for app in "${brewInstalls[@]}"; do
-  [[ $(brew info $app | grep "Not installed") ]] &&
-  (
-    log "brew install $app"
-    brew install $app
-   ) || echo " - $app already installed"
+  [[ $(brew info $app | grep "Not installed") ]] && log "brew install $app" && brew install $app
 done
 
+
+# Cask installs
 for app in "${brewCaskInstalls[@]}"; do
-  [[ $(brew cask info $app | grep "Not installed") ]] &&
-  (
-    log "brew cask install $app"
-    brew cask install $app
-   ) || echo " - $app already installed"
+  [[ $(brew cask info $app | grep "Not installed") ]] && log "brew cask install $app" && brew cask install $app
 done
 
 # Reload Quicklook
 qlmanage -r
+
 
 # Setup dotfiles
 [ ! -d $dotfiles_location ] &&
@@ -125,7 +168,7 @@ qlmanage -r
   curl https://raw.github.com/creationix/nvm/master/install.sh | sh
   source ~/.bash_profile
   nvm install $nodeVersion
-  nvm alias default 0.10
+  nvm alias default $nodeVersion
 ) || log "NVM already installed. Installing apps..."
 
 source ~/.bash_profile
