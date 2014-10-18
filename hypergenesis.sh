@@ -16,6 +16,8 @@ brewInstalls=(
   grc
   brew-cask
   rcm
+  vim
+  hub
   gnu-tar
   tmux
   htop-osx
@@ -48,26 +50,26 @@ brewCaskInstalls=(
   virtualbox
   vagrant
   onepassword
+  omnifocus
+  omnifocus-clip-o-tron
   dropbox
   evernote
   firefox
   iterm2
+  viscosity
   arq
+  transmit
   vlc
-  qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv
-  betterzipql
-  webp-quicklook
+  textexpander
+  qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql webp-quicklook
   suspicious-package
  )
 
 dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
-nodeVersion='0.10'
-rubyVersion='2.0'
-
 # Node apps to npm install -g
-nodeGlobalModules=(jsontool node-dev bunyan grunt-cli)
+nodeGlobalModules=(jsontool node-dev bunyan grunt-cli autoprefixer bower clean-css coffee-script)
 
 
 #
@@ -136,7 +138,6 @@ done
 
 brew update
 
-
 # Brew installs
 for app in "${brewInstalls[@]}"; do
   [[ $(brew info $app | grep "Not installed") ]] && log "brew install $app" && brew install $app
@@ -145,7 +146,9 @@ done
 
 # Cask installs
 for app in "${brewCaskInstalls[@]}"; do
-  [[ $(brew cask info $app | grep "Not installed") ]] && log "brew cask install $app" && brew cask install $app
+  [[ $(brew cask info $app | grep "Not installed") ]] &&
+    log "brew cask install $app" &&
+    brew cask install $app
 done
 
 # Reload Quicklook
@@ -153,40 +156,35 @@ qlmanage -r
 
 
 # Setup dotfiles
-[ ! -d $dotfiles_location ] &&
-(
+[ ! -d $dotfiles_location ] && (
   log "Setting up your dotfiles repo"
   git clone $dotfiles_repo $dotfiles_location
-  cd $dotfiles_location
-  script/bootstrap
-) || log "dotfiles already installed. Skipping..."
+)
+
+rcup
 
 # Install node
-[ ! -d $HOME/.nvm ] &&
-(
+[ ! -d $HOME/.nvm ] && (
   log "Installing NVM"
   curl https://raw.github.com/creationix/nvm/master/install.sh | sh
   source ~/.bash_profile
-  nvm install $nodeVersion
-  nvm alias default $nodeVersion
-) || log "NVM already installed. Installing apps..."
+  nvm install stable
+  nvm alias default stable
+)
 
 source ~/.bash_profile
 
 for module in "${nodeGlobalModules[@]}"; do
   [[ -z $(npm ls -gp $module) ]] &&
-  (
-    log "npm install -g $module"
+    log "npm install -g $module" &&
     npm install -g $module
-  ) || echo " - $module already installed"
 done
 
 
-[ ! -d $HOME/.rvm ] &&
-(
+[ ! -d $HOME/.rvm ] && (
   log "Installing RVM"
-  curl -L https://get.rvm.io | bash -s stable --ruby=$rubyVersion
-) || log "RVM already installed. Skipping..."
+  \curl -sSL https://get.rvm.io | bash -s stable
+)
 
 
 echo '           ________  _            '
