@@ -7,14 +7,13 @@ set -e
 # - - - - - - - - - - - - - - - - - - - - - -
 
 brewTaps=(
-  phinze/homebrew-cask
   thoughtbot/formulae
 )
 
 brewInstalls=(
   git
   grc
-  brew-cask
+  caskroom/cask/brew-cask
   rcm
   vim
   hub
@@ -54,6 +53,7 @@ brewCaskInstalls=(
   omnifocus-clip-o-tron
   dropbox
   evernote
+  mailbox
   firefox
   iterm2
   viscosity
@@ -119,6 +119,7 @@ echo "7. Install RVM and ruby $rubyVersion"
 echo ''
 
 read -p "Are you ok with this? " -n 1
+
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
     exit 1
@@ -180,11 +181,21 @@ for module in "${nodeGlobalModules[@]}"; do
     npm install -g $module
 done
 
-
 [ ! -d $HOME/.rvm ] && (
   log "Installing RVM"
-  \curl -sSL https://get.rvm.io | bash -s stable
+  \curl -sSL https://get.rvm.io | bash -s stable --ruby
 )
+
+[[ ! $(which bundler) ]] && (
+  gem update --system
+  gem install bundler --no-document --pre
+  number_of_cores=$(sysctl -n hw.ncpu)
+  bundle config --global jobs $((number_of_cores - 1))
+ )
+
+[[ ! $(which foreman) ]] &&
+  curl -sLo /tmp/foreman.pkg http://assets.foreman.io/foreman/foreman.pkg && \
+  sudo installer -pkg /tmp/foreman.pkg -tgt /
 
 
 echo '           ________  _            '
