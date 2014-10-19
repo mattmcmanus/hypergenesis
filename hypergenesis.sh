@@ -6,15 +6,11 @@ set -e
 #             Configuration
 # - - - - - - - - - - - - - - - - - - - - - -
 
-brewTaps=(
-  thoughtbot/formulae
-)
-
 brewInstalls=(
   git
   grc
   caskroom/cask/brew-cask
-  rcm
+  thoughtbot/formulae/rcm
   vim
   hub
   gnu-tar
@@ -43,7 +39,6 @@ brewCaskInstalls=(
   hazel
   istat-menus
   bartender
-  little-snitch
   atom
   fluid
   virtualbox
@@ -128,14 +123,9 @@ echo ""
 
 # Install homebrew
 [[ ! $(which brew) ]] &&
-  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)" &&
+  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &&
   brew doctor
 
-
-# Taps
-for tap in "${brewTaps[@]}"; do
-  [[ ! $(brew tap | grep $tap) ]] && log "brew tap $tap" brew tap $tap
-done
 
 brew update
 
@@ -153,7 +143,7 @@ for app in "${brewCaskInstalls[@]}"; do
 done
 
 # Reload Quicklook
-qlmanage -r
+#qlmanage -r
 
 
 # Setup dotfiles
@@ -173,12 +163,13 @@ rcup
   nvm alias default stable
 )
 
-source ~/.bash_profile
+# source ~/.bash_profile
 
 for module in "${nodeGlobalModules[@]}"; do
-  [[ -z $(npm ls -gp $module) ]] &&
+  [[ -z $(npm ls -gp $module) ]] && (
     log "npm install -g $module" &&
     npm install -g $module
+  )
 done
 
 [ ! -d $HOME/.rvm ] && (
