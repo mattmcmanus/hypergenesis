@@ -27,6 +27,9 @@ brewInstalls=(
   macvim
   rabbitmq
   the_silver_searcher
+  editorconfig
+  chromedriver
+  imagemagick
  )
 
 # Apps to install
