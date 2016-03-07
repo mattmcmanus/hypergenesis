@@ -13,7 +13,7 @@ hypergenesis_file_lists="$dotfiles_location/hypergensis"
 homebrew_taps="$hypergenesis_file_lists/homebrew-taps.txt"
 homebrew_installs="$hypergenesis_file_lists/homebrew-installs.txt"
 homebrew_cask_installs="$hypergenesis_file_lists/homebrew-cask-installs.txt"
-npm_gloabl_installs="$hypergenesis_file_lists/npm-gloabl-installs.txt"
+npm_global_installs="$hypergenesis_file_lists/npm-global-installs.txt"
 
 
 #
@@ -84,21 +84,21 @@ echo ""
 
 brew update
 
-if [[ ! -f $homebrew_taps]]; then
+if [ -f $homebrew_taps ]; then
   while read line; do
     [[ $(brew tap-info $line | grep "Not installed") ]] &&
       log "brew tap $line" && brew tap $app
   done < "$homebrew_taps"
 fi
 
-if [[ ! -f $homebrew_installs]]; then
+if [ -f $homebrew_installs ]; then
   while read line; do
     [[ $(brew info $line | grep "Not installed") ]] &&
       log "brew install $line" && brew install $line
   done < "$homebrew_installs"
 fi
 
-if [[ ! -f $homebrew_cask_installs]]; then
+if [ -f $homebrew_cask_installs ]; then
   while read line; do
     [[ $(brew cask info $line | grep "Not installed") ]] &&
       log "brew cask install $line" && brew cask install $line
@@ -107,8 +107,6 @@ fi
 
 # Reload Quicklook
 qlmanage -r
-
-rcup
 
 # Install node
 [ ! -d $HOME/.nvm ] && (
@@ -119,12 +117,12 @@ rcup
   nvm alias default stable
 )
 
-if [[ ! -f $npm_gloabl_installs]]; then
+if [ -f $npm_global_installs ]; then
   while read line; do
     [[ -z $(npm ls -gp $line) ]] && (
       log "npm install -g $line" && npm install -g $line
     )
-  done < "$npm_gloabl_installs"
+  done < "$npm_global_installs"
 fi
 
 [ ! -d $HOME/.rvm ] && (
@@ -142,6 +140,8 @@ fi
 [[ ! $(which foreman) ]] &&
   curl -sLo /tmp/foreman.pkg http://assets.foreman.io/foreman/foreman.pkg && \
   sudo installer -pkg /tmp/foreman.pkg -tgt /
+
+rcup
 
 
 echo '                        ________  _            '
