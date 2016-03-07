@@ -6,68 +6,14 @@ set -e
 #             Configuration
 # - - - - - - - - - - - - - - - - - - - - - -
 
-brewInstalls=(
-  git
-  grc
-  caskroom/cask/brew-cask
-  thoughtbot/formulae/rcm
-  vim
-  hub
-  gnu-tar
-  tmux
-  htop-osx
-  ctags
-  nginx
-  gnu-sed
-  mobile-shell
-  nmap
-  tree
-  wget
-  watch
-  macvim
-  rabbitmq
-  the_silver_searcher
-  editorconfig
-  chromedriver
-  imagemagick
- )
-
-# Apps to install
-brewCaskInstalls=(
-  alfred
-  google-chrome
-  google-hangouts
-  google-drive
-  transmission
-  hazel
-  istat-menus
-  bartender
-  atom
-  fluid
-  virtualbox
-  vagrant
-  onepassword
-  omnifocus
-  omnifocus-clip-o-tron
-  dropbox
-  evernote
-  mailbox
-  firefox
-  iterm2
-  viscosity
-  arq
-  transmit
-  vlc
-  textexpander
-  qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql webp-quicklook
-  suspicious-package
- )
-
 dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
-# Node apps to npm install -g
-nodeGlobalModules=(jsontool node-dev bunyan grunt-cli autoprefixer bower clean-css coffee-script)
+hypergenesis_file_lists="$dotfiles_location/hypergensis"
+homebrew_taps="$hypergenesis_file_lists/homebrew-taps.txt"
+homebrew_installs="$hypergenesis_file_lists/homebrew-installs.txt"
+homebrew_cask_installs="$hypergenesis_file_lists/homebrew-cask-installs.txt"
+npm_gloabl_installs="$hypergenesis_file_lists/npm-gloabl-installs.txt"
 
 
 #
@@ -103,17 +49,18 @@ echo '	/_/ /_/\__, / .___/\___/_/ / __/ _ \/ __ \/ _ \/ ___/ / ___/'
 echo '	      /____/_/          / /_/ /  __/ / / /  __(__  ) (__  ) '
 echo '	                        \____/\___/_/ /_/\___/____/_/____/  '
 echo ''
-echo '       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * '
+echo '      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * '
 echo ''
 echo 'This script will do the following:'
 echo ''
-echo '1. Install homebrew'
-echo "2. brew install ${brewInstalls[*]}"
-echo "3. brew cask install ${brewCaskInstalls[*]}"
-echo "4. Setup your dotfiles ($dotfiles_repo) into $dotfiles_location"
-echo "5. Install NVM and node.js $nodeVersion"
-echo "6. npm install -g ${nodeGlobalModules[*]}"
-echo "7. Install RVM and ruby $rubyVersion"
+echo "1. Setup your dotfiles ($dotfiles_repo) into $dotfiles_location"
+echo '2. Install homebrew'
+echo "3. brew tap everything listed in $homebrew_taps"
+echo "4. brew install everything listed in $homebrew_installs"
+echo "5. brew cask install $homebrew_cask_installs"
+echo "6. Install NVM and the latest stable node.js"
+echo "7. npm install -g everything list in $npm_gloabl_installs"
+echo "8. Install RVM and the latest stable ruby"
 echo ''
 
 read -p "Are you ok with this? " -n 1
@@ -124,36 +71,42 @@ then
 fi
 echo ""
 
-# Install homebrew
-[[ ! $(which brew) ]] &&
-  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &&
-  brew doctor
-
-
-brew update
-
-# Brew installs
-for app in "${brewInstalls[@]}"; do
-  [[ $(brew info $app | grep "Not installed") ]] && log "brew install $app" && brew install $app
-done
-
-
-# Cask installs
-for app in "${brewCaskInstalls[@]}"; do
-  [[ $(brew cask info $app | grep "Not installed") ]] &&
-    log "brew cask install $app" &&
-    brew cask install $app
-done
-
-# Reload Quicklook
-#qlmanage -r
-
-
 # Setup dotfiles
 [ ! -d $dotfiles_location ] && (
   log "Setting up your dotfiles repo"
   git clone $dotfiles_repo $dotfiles_location
 )
+
+# Install homebrew
+[[ ! $(which brew) ]] &&
+  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &&
+  brew doctor
+
+brew update
+
+if [[ ! -f $homebrew_taps]]; then
+  while read line; do
+    [[ $(brew tap-info $line | grep "Not installed") ]] &&
+      log "brew tap $line" && brew tap $app
+  done < "$homebrew_taps"
+fi
+
+if [[ ! -f $homebrew_installs]]; then
+  while read line; do
+    [[ $(brew info $line | grep "Not installed") ]] &&
+      log "brew install $line" && brew install $line
+  done < "$homebrew_installs"
+fi
+
+if [[ ! -f $homebrew_cask_installs]]; then
+  while read line; do
+    [[ $(brew cask info $line | grep "Not installed") ]] &&
+      log "brew cask install $line" && brew cask install $line
+  done < "$homebrew_cask_installs"
+fi
+
+# Reload Quicklook
+qlmanage -r
 
 rcup
 
@@ -166,14 +119,13 @@ rcup
   nvm alias default stable
 )
 
-# source ~/.bash_profile
-
-for module in "${nodeGlobalModules[@]}"; do
-  [[ -z $(npm ls -gp $module) ]] && (
-    log "npm install -g $module" &&
-    npm install -g $module
-  )
-done
+if [[ ! -f $npm_gloabl_installs]]; then
+  while read line; do
+    [[ -z $(npm ls -gp $line) ]] && (
+      log "npm install -g $line" && npm install -g $line
+    )
+  done < "$npm_gloabl_installs"
+fi
 
 [ ! -d $HOME/.rvm ] && (
   log "Installing RVM"
@@ -192,10 +144,10 @@ done
   sudo installer -pkg /tmp/foreman.pkg -tgt /
 
 
-echo '           ________  _            '
-echo '          |_   __  |(_)           '
-echo '            | |_ \_|__   _ .--.   '
-echo '            |  _|  [  | [ `.-. |  '
-echo '           _| |_    | |  | | | |  '
-echo '          |_____|  [___][___||__] '
-echo '                                  '
+echo '                        ________  _            '
+echo '                       |_   __  |(_)           '
+echo '                         | |_ \_|__   _ .--.   '
+echo '                         |  _|  [  | [ `.-. |  '
+echo '                        _| |_    | |  | | | |  '
+echo '                       |_____|  [___][___||__] '
+echo '                                               '
