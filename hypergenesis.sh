@@ -60,7 +60,7 @@ echo "4. brew install everything listed in $homebrew_installs"
 echo "5. brew cask install $homebrew_cask_installs"
 echo "6. Install NVM and the latest stable node.js"
 echo "7. npm install -g everything list in $npm_gloabl_installs"
-echo "8. Install RVM and the latest stable ruby"
+echo "8. Install rbenv and the latest stable ruby"
 echo ''
 
 read -p "Are you ok with this? " -n 1
@@ -125,9 +125,8 @@ if [ -f $npm_global_installs ]; then
   done < "$npm_global_installs"
 fi
 
-[ ! -d $HOME/.rvm ] && (
-  log "Installing RVM"
-  \curl -sSL https://get.rvm.io | bash -s stable --ruby
+[ ! -d $HOME/.rbenv ] && (
+  rbenv install 2.3.1
 )
 
 [[ ! $(which bundler) ]] && (
@@ -136,10 +135,6 @@ fi
   number_of_cores=$(sysctl -n hw.ncpu)
   bundle config --global jobs $((number_of_cores - 1))
  )
-
-[[ ! $(which foreman) ]] &&
-  curl -sLo /tmp/foreman.pkg http://assets.foreman.io/foreman/foreman.pkg && \
-  sudo installer -pkg /tmp/foreman.pkg -tgt /
 
 rcup
 
