@@ -14,29 +14,16 @@ homebrew_taps="$hypergenesis_file_lists/homebrew-taps.txt"
 homebrew_installs="$hypergenesis_file_lists/homebrew-installs.txt"
 homebrew_cask_installs="$hypergenesis_file_lists/homebrew-cask-installs.txt"
 npm_global_installs="$hypergenesis_file_lists/npm-global-installs.txt"
+mac_app_store_apps="$hypergenesis_file_lists/mac-app-store.txt"
 
 
 #
 #     Functions make things easier!
 # - - - - - - - - - - - - - - - - - - - - - -
-log() {
-  echo ""
-  echo " ==> $1"
-  echo ""
-}
-
+. _functions.sh
 #
 #         Commence Installations
 # - - - - - - - - - - - - - - - - - - - - - -
-
-#if [[ ! $(pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI) ]]; then
-#  xcode-select --install
-#
-#  echo "ERROR: XCode command line tools are NOT installed. The install should popup now. Retart your terminal when complete. Exiting..."
-#  echo ""
-#  echo "If you need help installing, go to http://stackoverflow.com/a/9329325/109589"
-#  exit 1
-#fi
 
 echo ''
 echo '       * * * * * * * * * * * * * * INITIATING * * * * * * * * * * * * * * '
@@ -63,38 +50,40 @@ echo "7. npm install -g everything list in $npm_gloabl_installs"
 echo "8. Install rbenv and the latest stable ruby"
 echo ''
 
-read -p "Are you ok with this? " -n 1
-
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-    exit 1
+section "Setting up xcode"
+if type xcode-select >&- && xpath=$( xcode-select --print-path ) &&
+	test -d "${xpath}" && test -x "${xpath}" ; then
+	log "Xcode already installed. Skipping."
+else
+	log "Installing Xcode…"
+	xcode-select --install
 fi
-echo ""
 
-# Setup dotfiles
+
+section "Setup dotfile"
 [ ! -d $dotfiles_location ] && (
   log "Setting up your dotfiles repo"
   git clone $dotfiles_repo $dotfiles_location
 )
 
-# Install homebrew
+section "Install homebrew"
 [[ ! $(which brew) ]] &&
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &&
   brew doctor
 
 brew update
 
+section "Setup taps and install"
 if [ -f $homebrew_taps ]; then
   while read line; do
     [[ $(brew tap-info $line | grep "Not installed") ]] &&
-      log "brew tap $line" && brew tap $app
+      log "brew tap $line" && brew tap $line
   done < "$homebrew_taps"
 fi
 
 if [ -f $homebrew_installs ]; then
   while read line; do
-    [[ $(brew info $line | grep "Not installed") ]] &&
-      log "brew install $line" && brew install $line
+    install_brews($line)
   done < "$homebrew_installs"
 fi
 
@@ -119,14 +108,12 @@ qlmanage -r
 
 if [ -f $npm_global_installs ]; then
   while read line; do
-    [[ -z $(npm ls -gp $line) ]] && (
-      log "npm install -g $line" && npm install -g $line
-    )
+    install_npm_packages($line)
   done < "$npm_global_installs"
 fi
 
 [ ! -d $HOME/.rbenv ] && (
-  rbenv install 2.3.1
+  rbenv install 2.4.1
 )
 
 [[ ! $(which bundler) ]] && (
@@ -136,8 +123,31 @@ fi
   bundle config --global jobs $((number_of_cores - 1))
  )
 
+section "Installing apps from App Store…"
+if [ -x mas ]; then
+	log "Please install mas-cli first: brew mas. Skipping."
+else
+	if [ -e $mac_app_store_apps ]; then
+		if mas_setup; then
+			# Workaround for associative array in Bash 3
+			# https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
+			for app in $(<$mac_app_store_apps); do
+				KEY="${app%%::*}"
+				VALUE="${app##*::}"
+				install_application_via_app_store $KEY $VALUE
+			done
+		else
+			print_warning "Please signin to App Store first. Skipping."
+		fi
+	fi
+
+fi
+
 rcup
 
+section "Cleaning up Homebrew files…"
+brew cleanup 2> /dev/null
+brew cask cleanup 2> /dev/null
 
 echo '                        ________  _            '
 echo '                       |_   __  |(_)           '
