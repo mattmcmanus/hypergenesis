@@ -28,10 +28,10 @@ install_npm_packages() {
 }
 
 install_brews() {
-  if test ! $(brew list | grep $brew); then
-        log "Installing $brew"
-		brew install $brew >/dev/null
+  if test ! $(brew list | grep $1); then
+        log "Installing $1"
+		brew install $1 >/dev/null
 	else
-  	log "$brew already installed. Skipped."
+  	log "$1 already installed. Skipped."
   fi
 }

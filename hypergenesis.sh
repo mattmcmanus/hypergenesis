@@ -83,7 +83,7 @@ fi
 
 if [ -f $homebrew_installs ]; then
   while read line; do
-    install_brews($line)
+    install_brews $line
   done < "$homebrew_installs"
 fi
 
@@ -97,6 +97,8 @@ fi
 # Reload Quicklook
 qlmanage -r
 
+rcup -t bash
+
 # Install node
 [ ! -d $HOME/.nvm ] && (
   log "Installing NVM"
@@ -108,12 +110,13 @@ qlmanage -r
 
 if [ -f $npm_global_installs ]; then
   while read line; do
-    install_npm_packages($line)
+    install_npm_packages $line
   done < "$npm_global_installs"
 fi
 
 [ ! -d $HOME/.rbenv ] && (
   rbenv install 2.4.1
+  rbenv global 2.4.1
 )
 
 [[ ! $(which bundler) ]] && (
