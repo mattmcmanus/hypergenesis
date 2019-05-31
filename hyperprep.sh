@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dotfiles_location="$HOME/.dotfiles/hypergensis"
+dotfiles_location="$HOME/.dotfiles/hypergenesis"
 
 mkdir -p $dotfiles_location
 
