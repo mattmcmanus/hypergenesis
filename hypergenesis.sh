@@ -13,8 +13,9 @@ hypergenesis_file_lists="$dotfiles_location/hypergenesis"
 homebrew_taps="$hypergenesis_file_lists/homebrew-taps.txt"
 homebrew_installs="$hypergenesis_file_lists/homebrew-installs.txt"
 homebrew_cask_installs="$hypergenesis_file_lists/homebrew-cask-installs.txt"
+mas_cli_installs="$hypergenesis_file_lists/mas-cli-installs.txt"
 npm_global_installs="$hypergenesis_file_lists/npm-global-installs.txt"
-mac_app_store_apps="$hypergenesis_file_lists/mac-app-store.txt"
+app_store_installs="$hypergenesis_file_lists/app-store-installs.txt"
 
 
 #
@@ -41,7 +42,7 @@ echo ''
 echo 'This script will do the following:'
 echo ''
 echo "1. Setup your dotfiles ($dotfiles_repo) into $dotfiles_location"
-echo '2. Install homebrew'
+echo '2. Install homebrew and mas-cli'
 echo "3. brew tap everything listed in $homebrew_taps"
 echo "4. brew install everything listed in $homebrew_installs"
 echo "5. brew cask install $homebrew_cask_installs"
@@ -72,6 +73,9 @@ section "Install homebrew"
   brew doctor
 
 brew update
+if ! brew ls --versions mas > /dev/null; then
+  brew install mas
+fi
 
 section "Setup taps and install"
 if [ -f $homebrew_taps ]; then
@@ -92,6 +96,20 @@ if [ -f $homebrew_cask_installs ]; then
     [[ $(brew cask info $line | grep "Not installed") ]] &&
       log "brew cask install $line" && brew cask install $line
   done < "$homebrew_cask_installs"
+fi
+
+
+section "Installing apps from App Store…"
+if ! brew ls --versions mas > /dev/null; then
+	log "Please install mas-cli first: brew mas. Skipping."
+else
+  if [ -f $app_store_installs ]; then
+    log "installing App Store apps"
+    while read line; do
+      app_id=$(echo $line | grep -Eio '\d*')
+      mas install $app_id
+    done < "$app_store_installs"
+  fi
 fi
 
 # Reload Quicklook
@@ -125,26 +143,6 @@ fi
   number_of_cores=$(sysctl -n hw.ncpu)
   bundle config --global jobs $((number_of_cores - 1))
  )
-
-section "Installing apps from App Store…"
-if [ -x mas ]; then
-	log "Please install mas-cli first: brew mas. Skipping."
-else
-	if [ -e $mac_app_store_apps ]; then
-		if mas_setup; then
-			# Workaround for associative array in Bash 3
-			# https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
-			for app in $(<$mac_app_store_apps); do
-				KEY="${app%%::*}"
-				VALUE="${app##*::}"
-				install_application_via_app_store $KEY $VALUE
-			done
-		else
-			print_warning "Please signin to App Store first. Skipping."
-		fi
-	fi
-
-fi
 
 rcup
 
