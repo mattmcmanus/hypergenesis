@@ -9,7 +9,7 @@ set -e
 dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
-hypergenesis_file_lists="$dotfiles_location/hypergensis"
+hypergenesis_file_lists="$dotfiles_location/hypergenesis"
 homebrew_taps="$hypergenesis_file_lists/homebrew-taps.txt"
 homebrew_installs="$hypergenesis_file_lists/homebrew-installs.txt"
 homebrew_cask_installs="$hypergenesis_file_lists/homebrew-cask-installs.txt"
