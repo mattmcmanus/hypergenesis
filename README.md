@@ -26,5 +26,10 @@ Now make sure to commit this file to your dotfiles repo
 
 ## Run it from a fresh install
 
-1. `git clone git@github.com:mattmcmanus/hypergenesis.git` wherever you want
-2. Run `./hypergenesis.sh` from within the checked out `hypergenesis` directory
+```
+curl -fsSL https://raw.githubusercontent.com/mattmcmanus/hypergenesis/master/hypergenesis.sh | bash /dev/stdin <your dotfile repo>
+
+# For example
+
+curl -fsSL https://raw.githubusercontent.com/mattmcmanus/hypergenesis/master/hypergenesis.sh | bash /dev/stdin git@github.com:mattmcmanus/dotfiles.git
+```

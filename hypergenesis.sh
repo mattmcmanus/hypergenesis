@@ -2,21 +2,35 @@
 
 set -e
 
+section() {
+  echo ""
+  echo "##################################################"
+  echo "                   $1"
+  echo "##################################################"
+  echo ""
+}
+
+log() {
+  echo ""
+  echo " ==> $1"
+  echo ""
+}
+
+DOTFILES_REPO=$1
+
+if [[ -z "$DOTFILES_REPO" ]]; then
+    echo "Must provide a dotfiles repo as an argument, eg: git@github.com:mattmcmanus/dotfiles.git" 1>&2
+    exit 1
+fi
+
+
 #
 #             Configuration
 # - - - - - - - - - - - - - - - - - - - - - -
 
-dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
+# dotfiles_repo='git@github.com:mattmcmanus/dotfiles.git'
 dotfiles_location="$HOME/.dotfiles"
 
-
-#
-#     Functions make things easier!
-# - - - - - - - - - - - - - - - - - - - - - -
-. _functions.sh
-#
-#         Commence Installations
-# - - - - - - - - - - - - - - - - - - - - - -
 
 echo ''
 echo '       * * * * * * * * * * * * * * INITIATING * * * * * * * * * * * * * * '
@@ -44,7 +58,7 @@ fi
 section "Setup dotfiles"
 [ ! -d $dotfiles_location ] && (
   log "Setting up your dotfiles repo"
-  git clone $dotfiles_repo $dotfiles_location
+  git clone $DOTFILES_REPO $dotfiles_location
 )
 
 section "Install homebrew"
