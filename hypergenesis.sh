@@ -54,9 +54,6 @@ section "Install homebrew"
 
 brew update -q
 
-# Reload Quicklook
-qlmanage -r
-
 section "Brew Bundle"
 brew bundle --file="~/.dotfiles/Brewfile"
 

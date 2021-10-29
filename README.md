@@ -15,17 +15,12 @@ It's a simple script with strict assumptions (ie: you use `rcm`, `nvm` & `rvm`).
 
 **On your existing development machine**
 
-**THIS DOCUMENTATION IS OUT OF DATE**
+```
+brew bundle dump --describe --global
+mkrc ~/.Brewfile
+```
 
-`./hyperprep.sh` will create configuration files in your dotfiles directory listing your currently installed:
-
-* `homebrew tap`s
-* `homebrew` installs
-* `homebrew cask` installs,
-* globally installed `npm` modules
-* for your convenience, the list of every app in your `/Applications/` folder.
-
-It assumes your dotfiles are at `~/.dotfiles`. It will create several files in `~/.dotfiles/hypergenesis`
+Now make sure to commit this file to your dotfiles repo
 
 **Make sure to commit and push these changes**
 
