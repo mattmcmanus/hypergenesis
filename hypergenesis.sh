@@ -47,8 +47,7 @@ echo '      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 echo ''
 
 section "Setting up xcode"
-if type xcode-select >&- && xpath=$( xcode-select --print-path ) &&
-	test -d "${xpath}" && test -x "${xpath}" ; then
+if [ -x "$(command -v xcode-select)" ] && [ -d "$(xcode-select -p)" ]; then
 	log "Xcode already installed. Skipping."
 else
 	log "Installing Xcode…"
