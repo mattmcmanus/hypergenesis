@@ -74,7 +74,8 @@ fi
 section "Install homebrew"
 if ! command_exists brew; then
     log "Installing Homebrew..."
-    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+ || {
         echo "Error: Failed to install Homebrew" >&2
         exit 1
     }
